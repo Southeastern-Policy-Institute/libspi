@@ -3,6 +3,7 @@
 
 CPP       := i686-w64-mingw32-g++
 LD        := i686-w64-mingw32-gcc
+STRIP     := i686-w64-mingw32-strip
 
 SRCDIR    := .
 INCDIR    := ../inc
@@ -14,16 +15,20 @@ OUTPUT    := $(OUTDIR)/test.exe
 CPPSRC    := $(wildcard $(SRCDIR)/*.cpp)
 OBJ       := $(CPPSRC:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
-CPPFLAGS  := -fno-threadsafe-statics -fabi-version=0    \
-             -nostdinc++   \
-             -Wall -I$(INCDIR) -fno-rtti -nostartfiles
-LDFLAGS   := -mwindows -L$(LIBDIR) -lspi -lkernel32 -luser32
+CPPFLAGS  := -c -fno-exceptions -Wall -O0 -std=c++17 -fno-builtin -fno-ident \
+             -ffreestanding -I$(INCDIR)
+LDFLAGS   := -fno-threadsafe-statics -fabi-version=0 -nostdinc++ -Wall       \
+             -fno-rtti -nostartfiles -mwindows -L$(LIBDIR) -lspi -lkernel32  \
+             -luser32
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	$(CPP) -c -fno-exceptions -Wall -O0 -std=c++17 -fno-builtin -fno-ident -ffreestanding -o $@ $<
+	$(CPP) $(CPPFLAGS) -o $@ $<
 
-all: $(OBJ)
-	$(LD) $(OBJ) $(LDFLAGS) $(CPPFLAGS) -o $(OUTPUT)
+$(OUTPUT) : $(OBJ)
+	$(LD) $(OBJ) $(LDFLAGS) -o $(OUTPUT)
+
+all: $(OUTPUT)
+	$(STRIP) -s $(OUTPUT)
 
 .PHONY : clean
 clean :
