@@ -28,7 +28,7 @@ namespace spi {
   template <typename T> class string {
     T* str_;
   public:
-    static __SIZE_TYPE__ strlen (T* str) {
+    static __SIZE_TYPE__ strlen (const T* str) {
       __SIZE_TYPE__ len;
       for (len = 0; *str; str++, len++);
       return len;
@@ -49,8 +49,8 @@ namespace spi {
         return;
       delete str_;
     };
-    inline operator const T* (void) const { return &str_; };
-    inline operator T* (void) { return &str_; };
+    inline operator const T* (void) const { return str_; };
+    inline operator T* (void) { return str_; };
     inline __SIZE_TYPE__ length (void) const { return strlen (str_); };
   };
 
