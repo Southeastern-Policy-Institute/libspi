@@ -7,7 +7,9 @@ int WinMain(  HINSTANCE hInstance,
               LPSTR     lpCmdLine,
               int       nShowCmd)
 {
-  spi::string<char> test_string = "TESTING!";
+  spi::mutex* test_mutex = new spi::mutex ();
+  spi::string test_string {"TESTING!"};
   MessageBoxA (NULL, test_string, "TEST", MB_OK);
+  delete test_mutex;
   return 0;
 };

@@ -4,5 +4,8 @@
 
 # ifndef  _SPI_H_
 #   define  _SPI_H_
+#   include "spi/spidef.h"
 #   include "spi/string.h"
+#   include "spi/mutex.h"
+#   include "spi/vector.h"
 # endif /* _SPI_H_ */

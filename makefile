@@ -31,7 +31,7 @@ $(OUTPUT) : $(OBJ)
 $(TEST): $(OUTPUT)
 	make -C $(TESTDIR) all
 
-all: $(OBJ) $(TEST)
+all: $(OUTPUT) $(TEST)
 
 .PHONY : clean
 clean :

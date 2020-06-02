@@ -4,6 +4,7 @@
 
 #define  WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include "../inc/spi.h"
 
 void* operator new (__SIZE_TYPE__ len) {
   return HeapAlloc (GetProcessHeap (), HEAP_ZERO_MEMORY, len);
@@ -18,7 +19,7 @@ void operator delete (void* ptr) {
     HeapFree (GetProcessHeap (), 0, ptr);
 };
 
-void operator delete (void* ptr, unsigned int res) noexcept {
+void operator delete (void* ptr, __SIZE_TYPE__ res) noexcept {
   if (ptr)
     HeapFree (GetProcessHeap (), 0, ptr);
 };
