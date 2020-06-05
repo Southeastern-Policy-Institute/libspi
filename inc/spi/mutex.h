@@ -4,11 +4,12 @@
 
 # ifndef  _SPI_MUTEX_H_
 #   define  _SPI_MUTEX_H_
+#   include "spidef.h"
 #   ifdef   __cplusplus
 
 namespace spi {
 
-  class mutex {
+  class SPI_LOG_API mutex {
     void* handle_;
   public:
     mutex (void);

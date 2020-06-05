@@ -2,14 +2,15 @@
 # Southeastern Policy Institute, 2020
 
 CPP       := i686-w64-mingw32-g++
-AR        := i686-w64-mingw32-ar
+LD        := i686-w64-mingw32-gcc
+STRIP     := i686-w64-mingw32-strip
 
 SRCDIR    := src
 INCDIR    := inc
 OUTDIR    := bin
 OBJDIR    := obj
 
-OUTPUT    := $(OUTDIR)/libspi.a
+OUTPUT    := $(OUTDIR)/libspi.dll
 CPPSRC    := $(wildcard $(SRCDIR)/*.cpp)
 OBJ       := $(CPPSRC:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
@@ -18,15 +19,18 @@ TESTDIR   := test
 TEST      := $(OUTDIR)/test.exe
 
 CPPFLAGS  := -c -fno-exceptions -O0 -fno-threadsafe-statics -fabi-version=0 \
-             -nostdinc++ -std=c++17 -fno-builtin -fno-ident -ffreestanding  \
-             -Wall -I$(INCDIR) -fno-rtti -nostartfiles
-ARFLAGS   := rcs
+             -nostdinc++ -std=c++2a -fno-builtin -fno-ident -ffreestanding  \
+             -Wall -fno-rtti -nostartfiles -DBUILDING_LIBSPI
+LDFLAGS   := -shared -fno-threadsafe-statics -fabi-version=0 -nostdinc++       \
+             -fno-rtti -nostartfiles -lkernel32              \
+             -luser32 -Wl,--out-implib,$(OUTPUT:%.dll=%.a) -e_DllMain@12
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	$(CPP) $(CPPFLAGS) -o $@ $<
 
 $(OUTPUT) : $(OBJ)
-	$(AR) $(ARFLAGS) $(OUTPUT) $(OBJ)
+	$(LD) $(OBJ) $(LDFLAGS) -o $(OUTPUT)
+	$(STRIP) -s $(OUTPUT)
 
 $(TEST): $(OUTPUT)
 	make -C $(TESTDIR) all

@@ -8,4 +8,5 @@
 #   include "spi/string.h"
 #   include "spi/mutex.h"
 #   include "spi/vector.h"
+#   include "spi/log.h"
 # endif /* _SPI_H_ */

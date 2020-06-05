@@ -128,7 +128,7 @@ namespace spi {
     };
 
     //  Access Operator
-    T& operator[] (uint32_t index) {
+    T& operator[] (__SIZE_TYPE__ index) {
       //  Bound check.
       if (index >= size ())
         return *element_;
