@@ -58,9 +58,10 @@ BOOL log_init (void) {
   // Generate temporary buffer and print startup string to it
   if (!buffer.operator TCHAR* ())
     goto L1;
-  wsprintf (buffer.operator TCHAR* (), startup_string, 0, 0, 5312020,
-            start_time.wMonth, start_time.wDay, start_time.wYear,
-            start_time.wHour, start_time.wMinute, start_time.wSecond, ithread);
+  wsprintf (buffer.operator TCHAR* (), startup_string, __SPI_VER_MAJOR__,
+            __SPI_VER_MINOR__, __SPI_VER_REVIS__, start_time.wMonth,
+            start_time.wDay, start_time.wYear, start_time.wHour,
+            start_time.wMinute, start_time.wSecond, ithread);
 
   // Write startup string to file
   WriteFile ( log_file, buffer.operator const TCHAR* (), buffer.length (),

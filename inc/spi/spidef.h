@@ -12,4 +12,7 @@
 #   else
 #     define  SPI_LOG_API __declspec(dllimport)
 #   endif
+#   define  __SPI_VER_MAJOR__ 0
+#   define  __SPI_VER_MINOR__ 0
+#   define  __SPI_VER_REVIS__ 20200607
 # endif /* _SPI_SPIDEF_H_ */
