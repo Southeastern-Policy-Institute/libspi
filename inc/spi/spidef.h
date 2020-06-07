@@ -7,6 +7,9 @@
 #   ifndef  NULL
 #     define NULL (void*)0U
 #   endif /* NULL */
+#   ifndef  __SIZE_TYPE__
+#     define __SIZE_TYPE__ unsigned int
+#   endif /* __SIZE_TYPE__ */
 #   ifdef   BUILDING_LIBSPI
 #     define  SPI_LOG_API __declspec(dllexport)
 #   else

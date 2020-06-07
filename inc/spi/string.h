@@ -4,6 +4,7 @@
 
 # ifndef  _SPI_STRING_H_
 #   define  _SPI_STRING_H_
+#   include "spidef.h"
 #   ifdef   __cplusplus
 
 namespace spi {
