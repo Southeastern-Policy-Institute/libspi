@@ -7,7 +7,8 @@ int WinMain(  HINSTANCE hInstance,
               LPSTR     lpCmdLine,
               int       nShowCmd)
 {
-  spi::spi_log ("TESTING");
-  MessageBoxA (NULL, "TESTING AGAIN", "TEST", MB_OK);
+  spi::string test_string {"TEST_STRING"};
+  spi::spi_log (test_string.operator const char* ());
+  MessageBoxA (NULL, test_string, "TEST", MB_OK);
   return 0;
 };
