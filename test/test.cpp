@@ -10,7 +10,7 @@ int WinMain(  HINSTANCE hInstance,
               int       nShowCmd)
 {
   spi::string test_string {"TEST_STRING"};
-  spi::spi_log (test_string.operator const char* ());
   MessageBoxA (NULL, test_string, "TEST", MB_OK);
+  spi::log::stdout() (test_string);
   return 0;
 };

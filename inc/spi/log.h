@@ -5,37 +5,34 @@
 # ifndef  _SPI_LOG_H_
 #   define  _SPI_LOG_H_
 #   include "spidef.h"
+#   include "mutex.h"
+#   include "file.h"
+#   include "string.h"
 #   ifdef   __cplusplus
 namespace spi {
-  extern "C" {
-#   endif   /* __cplusplus */
 
-    /* Log a string to log file. */
-    SPI_LOG_API unsigned long spi_log (const void*);
+  class SPI_LOG_API log : mutex {
+    static log* main_instance;
+    static const t_char* startup_string;
+    static const t_char* filename_ext;
 
-    /* Get host thread ID. */
-    SPI_LOG_API unsigned long spi_host_thread (void);
-
-#   ifdef   __cplusplus
-  };
-
-  /* C++ Wrapper Class */
-  class log {
-    log (void) = delete;
-    log (const log&) = delete;
-    log& operator=(const log&) = delete;
-    ~log (void) = delete;
+    unsigned long host_thread_;
+    file file_;
+    void* start_time_;
+    log (const log&);
+    log& operator= (const log&);
+    log (void);
   public:
-    /* Log a string to file. */
-    static inline unsigned long Log (const void* text) {
-      return spi_log (text);
-    };
-
-    /* Get host thread ID. */
-    static inline unsigned long HostThreadId (void) {
-      return spi_host_thread ();
+    log (const string<t_char>&);
+    ~log (void);
+    unsigned long operator() (const string<t_char>&);
+    static inline log& stdout (void) {
+      if (!main_instance)
+        main_instance = new log ();
+      return *main_instance;
     };
   };
+
 };
 #   endif   /* __cplusplus */
 # endif   /* _SPI_LOG_H_ */

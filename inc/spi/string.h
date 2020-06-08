@@ -5,6 +5,11 @@
 # ifndef  _SPI_STRING_H_
 #   define  _SPI_STRING_H_
 #   include "spidef.h"
+#   ifdef   UNICODE
+typedef wchar_t t_char;
+#   else
+typedef char t_char;
+#   endif /* UNICODE */
 #   ifdef   __cplusplus
 
 namespace spi {

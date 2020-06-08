@@ -4,101 +4,66 @@
 #include <windows.h>
 #include "../inc/spi.h"
 
-static spi::mutex* ghMutex = NULL;
-static spi::file* log_file = NULL;
-static DWORD ithread {0};
-static SYSTEMTIME   start_time;
+namespace spi {
 
-BOOL log_fini (void) {
-  delete log_file;
-  delete ghMutex;
-  return TRUE;
-};
+  log* log::main_instance {NULL};
 
-BOOL log_init (void) {
-  BOOL success_state = FALSE;
-  static LPCTSTR startup_string = "LIBSPI_LOG v%d.%02d r%04x\n"
-                                  "Started %02d/%02d/%02d at %02d:%02d:%02d\n"
-                                  "Host Thread: %04X\n";
-  static LPCTSTR log_ext = ".log";
-  spi::string<TCHAR> buffer {spi::string<TCHAR> (200)};
-  spi::string<TCHAR> log_filename {spi::string<TCHAR> (MAX_PATH)};
-  GetLocalTime (&start_time);
-  ithread = GetCurrentThreadId ();
+  const t_char* log::startup_string = "LIBSPI_LOG v%d.%02d r%04x\n"
+                                      "Started %02d/%02d/%02d "
+                                      "at %02d:%02d:%02d\n"
+                                      "Host Thread: %04X\n";
+  const t_char* log::filename_ext   = ".log";
 
-  // Initialize global mutex
-  ghMutex = new spi::mutex ();
+  log::log (void)
+    : log ([]()->const string<t_char>{
+        string<t_char> buffer {MAX_PATH};
+        GetModuleFileName (NULL, buffer, MAX_PATH);
+        memcpy (
+          buffer.operator t_char* () + (buffer.length () - 4),
+          filename_ext,
+          4
+        );
+        return buffer;
+      }())
+  {};
 
-  // Initialize process handle
-  HANDLE hProc = OpenProcess (
-    PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
-    FALSE,
-    GetCurrentProcessId ()
-  );
-  if (!hProc)
-    return FALSE;
-
-  // Generate log file name
-  if (!log_filename.operator const TCHAR* ())
-    return FALSE;
-  if (!GetModuleFileName (NULL, log_filename, MAX_PATH))
-    goto L1;
-  spi::memcpy (
-    log_filename.operator TCHAR* () + (log_filename.length () - 4),
-    log_ext,
-    4
-  );
-
-  // Generate log file handle
-  log_file = new spi::file (log_filename);
-  if (!log_file->operator bool ())
-    goto L1;
-
-  // Generate temporary buffer and print startup string to it
-  if (!buffer.operator TCHAR* ())
-    goto L1;
-  wsprintf (buffer.operator TCHAR* (), startup_string, __SPI_VER_MAJOR__,
-            __SPI_VER_MINOR__, __SPI_VER_REVIS__, start_time.wMonth,
-            start_time.wDay, start_time.wYear, start_time.wHour,
-            start_time.wMinute, start_time.wSecond, ithread);
-
-  // Write startup string to file
-  log_file->Write (buffer);
-
-  success_state = TRUE;
-L1: // Error: Unable to generate log file name or handle
-  return success_state;
-};
-
-extern "C" SPI_LOG_API DWORD spi_host_thread (void) {
-  if (!ghMutex->lock ())
-    return 0;
-  DWORD ret_val = ithread;
-  ghMutex->unlock ();
-  return ret_val;
-};
-
-extern "C" SPI_LOG_API DWORD spi_log (const void* str) {
-  spi::string<TCHAR> buffer {1024};
-  static LPCTSTR log_format = "[%04X|+%04d] %s\n";
-  DWORD bytes_written = 0;
-  SIZE_T secs = 0;
-
-  if (!ghMutex->lock ())
-    return 0;
-  if (!str || log_file == INVALID_HANDLE_VALUE || !log_file) {
-    bytes_written = 0;
-    goto E1;
+  log::log (const string<t_char>& path)
+    : mutex (),
+      host_thread_ (GetCurrentThreadId ()),
+      file_ (path),
+      start_time_ (new SYSTEMTIME)
+  {
+    string<t_char> buffer {MAX_PATH};
+    GetLocalTime ((LPSYSTEMTIME)start_time_);
+    SYSTEMTIME* start_time = (LPSYSTEMTIME)start_time_;
+    wsprintf (buffer, startup_string, __SPI_VER_MAJOR__,
+              __SPI_VER_MINOR__, __SPI_VER_REVIS__, start_time->wMonth,
+              start_time->wDay, start_time->wYear, start_time->wHour,
+              start_time->wMinute, start_time->wSecond, host_thread_);
+    file_.Write (buffer);
   };
 
-  SYSTEMTIME now;
-  GetLocalTime (&now);
-  secs =  ((SIZE_T)(now.wHour - start_time.wHour) * 3600) +
-          ((SIZE_T)(now.wMinute - start_time.wMinute) * 60) +
-          (now.wSecond - start_time.wSecond);
-  wsprintf (buffer, log_format, GetCurrentThreadId (), secs, str);
-  log_file->Write (buffer);
-E1: // Error after locking mutex
-  ghMutex->unlock ();
-  return bytes_written;
+  log::~log (void) {
+    delete (LPSYSTEMTIME)start_time_;
+  };
+
+  unsigned long log::operator() (const string<t_char>& str) {
+    static const t_char* log_format {"[%04X|+%04d] %s\n"};
+    string<t_char> buffer {1024};
+    SYSTEMTIME now;
+    GetLocalTime (&now);
+    SYSTEMTIME* start_time = (LPSYSTEMTIME)start_time_;
+    __SIZE_TYPE__ seconds { 
+      ((__SIZE_TYPE__)(now.wHour - start_time->wHour) * 3600) +
+      ((__SIZE_TYPE__)(now.wMinute - start_time->wMinute) * 60) +
+      (now.wSecond - start_time->wSecond) };
+    if (!lock ())
+      return 0;
+    wsprintf (buffer, log_format, GetCurrentThreadId (), seconds,
+              str.operator const t_char* ());
+    unsigned long bytes_written = file_.Write (buffer);
+    unlock ();
+    return bytes_written;
+  };
+
 };

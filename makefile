@@ -39,5 +39,5 @@ all: $(OUTPUT) $(TEST)
 
 .PHONY : clean
 clean :
-	rm -f $(OBJ) $(OUTPUT) $(TEST)
+	rm -f $(OBJ) $(OUTPUT:%.dll=%.a) $(OUTPUT:%.dll=%.log) $(OUTPUT) $(TEST)
 	make -C $(TESTDIR) clean
