@@ -2,7 +2,7 @@
  * Southeastern Policy Institute, 2020
  */
 
-# ifndef _SPI_VECTOR_H_
+# ifndef  _SPI_VECTOR_H_
 #   define  _SPI_VECTOR_H_
 #   include "spidef.h"
 #   ifdef   __cplusplus

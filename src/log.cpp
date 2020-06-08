@@ -4,9 +4,9 @@
 #include <windows.h>
 #include "../inc/spi.h"
 
-static spi::mutex*  ghMutex     = NULL;
-static spi::file*   log_file    = NULL;
-static DWORD        ithread     = 0;
+static spi::mutex* ghMutex = NULL;
+static spi::file* log_file = NULL;
+static DWORD ithread {0};
 static SYSTEMTIME   start_time;
 
 BOOL log_fini (void) {
@@ -71,10 +71,11 @@ L1: // Error: Unable to generate log file name or handle
 };
 
 extern "C" SPI_LOG_API DWORD spi_host_thread (void) {
-  ghMutex->lock ();
-  DWORD ret = ithread;
+  if (!ghMutex->lock ())
+    return 0;
+  DWORD ret_val = ithread;
   ghMutex->unlock ();
-  return ret;
+  return ret_val;
 };
 
 extern "C" SPI_LOG_API DWORD spi_log (const void* str) {
@@ -96,8 +97,6 @@ extern "C" SPI_LOG_API DWORD spi_log (const void* str) {
           ((SIZE_T)(now.wMinute - start_time.wMinute) * 60) +
           (now.wSecond - start_time.wSecond);
   wsprintf (buffer, log_format, GetCurrentThreadId (), secs, str);
-  WriteFile ( log_file, buffer.operator const TCHAR* (), buffer.length (),
-              &bytes_written, NULL);
   log_file->Write (buffer);
 E1: // Error after locking mutex
   ghMutex->unlock ();
