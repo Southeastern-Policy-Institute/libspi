@@ -8,6 +8,7 @@
 #   include "spi/string.h"
 #   include "spi/mutex.h"
 #   include "spi/vector.h"
+#   include "spi/file.h"
 #   include "spi/log.h"
 #   ifdef   __cplusplus
 extern "C" {
