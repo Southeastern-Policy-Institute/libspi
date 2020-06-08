@@ -5,13 +5,12 @@
 #include "../inc/spi.h"
 
 static spi::mutex*  ghMutex     = NULL;
-static HANDLE       log_file    = INVALID_HANDLE_VALUE;
+static spi::file*   log_file    = NULL;
 static DWORD        ithread     = 0;
 static SYSTEMTIME   start_time;
 
 BOOL log_fini (void) {
-  if (log_file != INVALID_HANDLE_VALUE && log_file != NULL)
-    CloseHandle (log_file);
+  delete log_file;
   delete ghMutex;
   return TRUE;
 };
@@ -24,7 +23,6 @@ BOOL log_init (void) {
   static LPCTSTR log_ext = ".log";
   spi::string<TCHAR> buffer {spi::string<TCHAR> (200)};
   spi::string<TCHAR> log_filename {spi::string<TCHAR> (MAX_PATH)};
-  DWORD bytes_written = 0;
   GetLocalTime (&start_time);
   ithread = GetCurrentThreadId ();
 
@@ -43,7 +41,7 @@ BOOL log_init (void) {
   // Generate log file name
   if (!log_filename.operator const TCHAR* ())
     return FALSE;
-  if (!GetModuleFileName (NULL, log_filename.operator TCHAR* (), MAX_PATH))
+  if (!GetModuleFileName (NULL, log_filename, MAX_PATH))
     goto L1;
   spi::memcpy (
     log_filename.operator TCHAR* () + (log_filename.length () - 4),
@@ -52,9 +50,8 @@ BOOL log_init (void) {
   );
 
   // Generate log file handle
-  log_file = CreateFile ( log_filename, GENERIC_WRITE, FILE_SHARE_WRITE,
-                          NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-  if (log_file == INVALID_HANDLE_VALUE || !log_file)
+  log_file = new spi::file (log_filename);
+  if (!log_file->operator bool ())
     goto L1;
 
   // Generate temporary buffer and print startup string to it
@@ -66,8 +63,7 @@ BOOL log_init (void) {
             start_time.wMinute, start_time.wSecond, ithread);
 
   // Write startup string to file
-  WriteFile ( log_file, buffer.operator const TCHAR* (), buffer.length (),
-              &bytes_written, NULL);
+  log_file->Write (buffer);
 
   success_state = TRUE;
 L1: // Error: Unable to generate log file name or handle
@@ -99,10 +95,10 @@ extern "C" SPI_LOG_API DWORD spi_log (const void* str) {
   secs =  ((SIZE_T)(now.wHour - start_time.wHour) * 3600) +
           ((SIZE_T)(now.wMinute - start_time.wMinute) * 60) +
           (now.wSecond - start_time.wSecond);
-  wsprintf (buffer.operator TCHAR* (), log_format, GetCurrentThreadId (),
-            secs, str);
+  wsprintf (buffer, log_format, GetCurrentThreadId (), secs, str);
   WriteFile ( log_file, buffer.operator const TCHAR* (), buffer.length (),
               &bytes_written, NULL);
+  log_file->Write (buffer);
 E1: // Error after locking mutex
   ghMutex->unlock ();
   return bytes_written;
