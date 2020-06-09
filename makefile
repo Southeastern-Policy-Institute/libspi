@@ -4,15 +4,19 @@
 CPP       := i686-w64-mingw32-g++
 LD        := i686-w64-mingw32-gcc
 STRIP     := i686-w64-mingw32-strip
+RES       := i686-w64-mingw32-windres
 
 SRCDIR    := src
 INCDIR    := inc
 OUTDIR    := bin
 OBJDIR    := obj
+RESDIR    := res
 
 OUTPUT    := $(OUTDIR)/libspi.dll
 CPPSRC    := $(wildcard $(SRCDIR)/*.cpp)
-OBJ       := $(CPPSRC:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+RCSRC     := $(wildcard $(SRCDIR)/*.rc)
+OBJ       := $(CPPSRC:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o) \
+             $(RCSRC:$(SRCDIR)/%.rc=$(OBJDIR)/%.o)
 
 # For testing purposes
 TESTDIR   := test
@@ -28,6 +32,9 @@ LDFLAGS   := -shared -fno-threadsafe-statics -fabi-version=0 -nostdinc++       \
 $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	$(CPP) $(CPPFLAGS) -o $@ $<
 
+$(OBJDIR)/%.o : $(SRCDIR)/%.rc
+	$(RES) $< -o $@
+
 $(OUTPUT) : $(OBJ)
 	$(LD) $(OBJ) $(LDFLAGS) -o $(OUTPUT)
 	$(STRIP) -s $(OUTPUT)
@@ -39,5 +46,5 @@ all: $(OUTPUT) $(TEST)
 
 .PHONY : clean
 clean :
-	rm -f $(OBJ) $(OUTPUT:%.dll=%.a) $(OUTPUT:%.dll=%.log) $(OUTPUT) $(TEST)
+	rm -f $(OBJ) $(OUTPUT:%.dll=%.a) $(TEST:%.exe=%.log) $(OUTPUT) $(TEST)
 	make -C $(TESTDIR) clean

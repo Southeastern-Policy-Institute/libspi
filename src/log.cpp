@@ -8,10 +8,10 @@ namespace spi {
 
   log* log::main_instance {NULL};
 
-  const t_char* log::startup_string = "LIBSPI_LOG v%d.%02d r%04x\n"
+  const t_char* log::startup_string = "LIBSPI_LOG v%d.%02d r%04x\r\n"
                                       "Started %02d/%02d/%02d "
-                                      "at %02d:%02d:%02d\n"
-                                      "Host Thread: %04X\n";
+                                      "at %02d:%02d:%02d\r\n"
+                                      "Host Thread: %04X\r\n";
   const t_char* log::filename_ext   = ".log";
 
   log::log (void)
@@ -48,7 +48,7 @@ namespace spi {
   };
 
   unsigned long log::operator() (const string<t_char>& str) {
-    static const t_char* log_format {"[%04X|+%04d] %s\n"};
+    static const t_char* log_format {"[%04X|+%04d] %s\r\n"};
     string<t_char> buffer {1024};
     SYSTEMTIME now;
     GetLocalTime (&now);

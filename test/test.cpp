@@ -4,7 +4,7 @@
 #include <windows.h>
 #include "../inc/spi.h"
 
-int WinMain(  HINSTANCE hInstance,
+int WinMain ( HINSTANCE hInstance,
               HINSTANCE hPrevInstance,
               LPSTR     lpCmdLine,
               int       nShowCmd)
