@@ -1,12 +1,11 @@
 # libspi
-Lightweight utility library intended to eventually provide a replacement for the C and C++ standard runtime libraries on Windows.
+Light weight drop-in library with various utilities.
 ## Features
 Files | Associated Feature
 ------------ | -------------
-`src/mutex.cpp`<br>`inc/spi/mutex.h` | `spi::mutex` - Abstraction of the win32 `mutex` object into a C++ class.
-`src/stdlib.cpp` | `new` and `delete` operators.
-`src/file.cpp`<br>`inc/spi/file.h` | `spi::file` - Abstraction of the win32 file handle.
-`src/log.cpp`<br>`inc/spi/log.h` | `spi::log` - A simple logging framework.
+`src/stdlib.cpp` | `new` and `delete` operators so you don't need to include libstdc++.  There is currently no need to link against libspi if you intend to use the standard C++ library; the header files are enough.
+`inc/spi/algorithm.hpp` | General purpose algorithms including: `memset()`, `memcpy()`, `memclr()`, and `swap()`
+`inc/spi/array.hpp` | `spi::array` - Variable-type dynamic array
+`inc/spi/list.hpp` | `spi::list` - Singly-linked list
+`inc/spi/stream.hpp` | `spi::stream` - String stream
 `inc/spi/string.h` | `spi::string` - Platform independent dynamic string class.
-`inc/spi/vector.h` | `spi::vector` - Platform independent vector class.  Implemented as a singly-linked list.
-`src/main.cpp` | Startup code for Windows DLL.
