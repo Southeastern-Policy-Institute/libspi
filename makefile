@@ -1,50 +1,61 @@
 # Adaptive Multipurpose Makefile
 # Southeastern Policy Institute, 2020
 
-CPP       := i686-w64-mingw32-g++
-LD        := i686-w64-mingw32-gcc
-STRIP     := i686-w64-mingw32-strip
-RES       := i686-w64-mingw32-windres
+# Project Name
+PROJ_NAME := libspi
 
+# Definitions / Un-definitions
+DEFS      := __PROJ_NAME=\"$(PROJ_NAME)\" DEBUG
+UNDEFS    := UNICODE
+
+# Commands
+GCC_PREFIX:=
+AR        := $(GCC_PREFIX)ar
+AS        := nasm
+CC        := $(GCC_PREFIX)gcc
+CPP       := $(GCC_PREFIX)g++
+LD        := $(GCC_PREFIX)ld
+RES       := $(GCC_PREFIX)windres
+STRIP     := $(GCC_PREFIX)strip
+
+# Directories
 SRCDIR    := src
 INCDIR    := inc
-OUTDIR    := bin
+OUTDIR    := lib
 OBJDIR    := obj
 RESDIR    := res
 
-OUTPUT    := $(OUTDIR)/libspi.dll
-CPPSRC    := $(wildcard $(SRCDIR)/*.cpp)
-RCSRC     := $(wildcard $(SRCDIR)/*.rc)
-OBJ       := $(CPPSRC:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o) \
-             $(RCSRC:$(SRCDIR)/%.rc=$(OBJDIR)/%.o)
+# Files
+OUTPUT    := $(PROJ_NAME:%=$(OUTDIR)/%.a)
+SRC       := $(wildcard $(SRCDIR)/*.*)
+OBJ       := $(SRC:$(SRCDIR)/%=$(OBJDIR)/%.o)
 
-# For testing purposes
-TESTDIR   := test
-TEST      := $(OUTDIR)/test.exe
+# Flags
+ASFLAGS   := -f elf
+CPPFLAGS  := -c -Wall \
+             $(INCDIR:%=-I%) $(DEFS:%=-D%) $(UNDEFS:%=-U%)
+CFLAGS    := $(CPPFLAGS)
 
-CPPFLAGS  := -c -fno-exceptions -O0 -fno-threadsafe-statics -fabi-version=0 \
-             -nostdinc++ -std=c++2a -fno-builtin -fno-ident -ffreestanding  \
-             -Wall -fno-rtti -nostartfiles -DBUILDING_LIBSPI
-LDFLAGS   := -shared -fno-threadsafe-statics -fabi-version=0 -nostdinc++       \
-             -fno-rtti -nostartfiles -lkernel32              \
-             -luser32 -Wl,--out-implib,$(OUTPUT:%.dll=%.a) -e_DllMain@12
-
-$(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+# Rules
+$(OBJDIR)/%.cpp.o : $(SRCDIR)/%.cpp
 	$(CPP) $(CPPFLAGS) -o $@ $<
 
-$(OBJDIR)/%.o : $(SRCDIR)/%.rc
-	$(RES) $< -o $@
+$(OBJDIR)/%.c.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(OBJDIR)/%.asm.o : $(SRCDIR)/%.asm
+	$(AS) $(ASFLAGS) -o $@ $<
 
 $(OUTPUT) : $(OBJ)
-	$(LD) $(OBJ) $(LDFLAGS) -o $(OUTPUT)
-	$(STRIP) -s $(OUTPUT)
+	$(AR) rcs $@ $^
 
-$(TEST): $(OUTPUT)
-	make -C $(TESTDIR) all
+$(OUTDIR)/test : $(OUTPUT)
+	cd test && $(MAKE) all
 
-all: $(OUTPUT) $(TEST)
+.PHONY : all
+all : $(OUTDIR)/test
 
 .PHONY : clean
 clean :
-	rm -f $(OBJ) $(OUTPUT:%.dll=%.a) $(TEST:%.exe=%.log) $(OUTPUT) $(TEST)
-	make -C $(TESTDIR) clean
+	clear
+	rm -f $(wildcard $(OBJDIR)/*.*) $(wildcard $(OUTDIR)/*.*)

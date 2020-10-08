@@ -1,4 +1,0 @@
-#include "winver.h"
-#include "../inc/spi/resource.h"
-
-IDI_ICON ICON "../res/spi_icon.ico"
