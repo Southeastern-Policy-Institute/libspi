@@ -9,7 +9,7 @@ DEFS      := __PROJ_NAME=\"$(PROJ_NAME)\" DEBUG
 UNDEFS    := UNICODE
 
 # Commands
-GCC_PREFIX:=
+GCC_PREFIX:= i686-w64-mingw32-
 AR        := $(GCC_PREFIX)ar
 AS        := nasm
 CC        := $(GCC_PREFIX)gcc
@@ -32,7 +32,7 @@ OBJ       := $(SRC:$(SRCDIR)/%=$(OBJDIR)/%.o)
 
 # Flags
 ASFLAGS   := -f elf
-CPPFLAGS  := -c -Wall \
+CPPFLAGS  := -c -Wall -fPIC \
              $(INCDIR:%=-I%) $(DEFS:%=-D%) $(UNDEFS:%=-U%)
 CFLAGS    := $(CPPFLAGS)
 

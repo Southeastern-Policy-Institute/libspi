@@ -53,6 +53,12 @@ namespace spi {
       active_index_ (0)
     { array_ = size ? new T[size] : nullptr; };
 
+    array (const T* input_array, unsigned int size) : array (size) {
+      while (size--)
+        array_[active_index_++] = *input_array++;
+      active_index_ = 0;
+    };
+
     template <typename... Targs>
     array (T head_1, Targs... args)
       : array (sizeof...(args) + 1)
@@ -65,7 +71,7 @@ namespace spi {
         array_[i] = arr.array_[i];
     };
 
-    ~array (void) { delete array_; };
+    ~array (void) { delete[] array_; };
 
     array& operator= (const array& arr) {
       delete array_;
@@ -89,6 +95,13 @@ namespace spi {
       if (!array_ || index >= size_)
         return T ();
       return T (array_[index]);
+    };
+
+    T& operator[] (unsigned int index) {
+      static T NULL_T;
+      if (!array_ || index >= size_)
+        return NULL_T;
+      return array_[index];
     };
   };
 
