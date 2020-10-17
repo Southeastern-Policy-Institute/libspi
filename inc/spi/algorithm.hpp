@@ -26,9 +26,7 @@ namespace spi {
 
   // Clear memory
   template <typename T> T* memclr (T* dest, unsigned int len) {
-    return memset (static_cast<char*> (dest),
-      char (0),
-      len * sizeof (T));
+    return memset (dest, T (), len);
   };
 
   // Swap memory

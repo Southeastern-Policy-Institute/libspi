@@ -1,31 +1,11 @@
-/* STDLIB.CPP - Standard C and C++ Library Functions.
+/* STRING.CPP - String manipulation routines.
  * Southeastern Policy Institute, 2020
  */
 
-#include <stdlib.h>
-#include "../inc/spi.h"
-
-void* operator new (__SIZE_TYPE__ len) {
-  return malloc (len);
-};
-
-void* operator new[] (__SIZE_TYPE__ len) {
-  return malloc (len);
-};
-
-void operator delete (void* ptr) {
-  free (ptr);
-};
-
-void operator delete (void* ptr, __SIZE_TYPE__ res) noexcept {
-  free (ptr);
-};
-
-void operator delete[] (void* ptr) {
-  free (ptr);
-};
+#include <spi.h>
 
 namespace spi {
+
   string& operator<< (string& dest, const string& str) {
     __SIZE_TYPE__ len = dest.length () + str.length () + 1;
     tchar_t* temp = new tchar_t[len];
@@ -36,4 +16,16 @@ namespace spi {
     dest.array_ = temp;
     return dest;
   };
+
+  string& operator<< (string& dest, tchar_t c) {
+    __SIZE_TYPE__ len = dest.length () + 2;
+    tchar_t* temp = new tchar_t[len];
+    memclr (temp, len);
+    memcpy (temp, dest.array_, dest.length ());
+    temp[dest.length()] = c;
+    delete dest.array_;
+    dest.array_ = temp;
+    return dest;
+  };
+
 };

@@ -4,15 +4,7 @@
 
 # if !defined(_SPI_STRING_HPP_)
 #   define  _SPI_STRING_HPP_
-#   include "algorithm.hpp"
-#   include "array.hpp"
-#   ifdef   UNICODE
-#     define  PREFIX_L(x) L ## x
-typedef wchar_t tchar_t;
-#   else
-#     define  PREFIX_L(x) x
-typedef char tchar_t;
-#   endif /* UNICODE */
+#   include "string.h"
 #   ifdef __cplusplus
 namespace spi {
 
@@ -67,6 +59,7 @@ namespace spi {
 #     endif /* UNICODE */
 
     friend string& operator<< (string&, const string&);
+    friend string& operator<< (string&, tchar_t);
 
     bool operator== (const string& target) const {
       if (target.length () != length ())

@@ -1,4 +1,4 @@
-/* VARIANT.H - Variable of variables
+/* VARIANT.H - Visual Basic Variant Type Implementation
  * Southeastern Policy Institute, 2020
  */
 
@@ -7,28 +7,29 @@
 #   include "types.h"
 #   if defined(__cplusplus)
 namespace spi {
-  using namespace types;
+  namespace types {
 #   endif /* __cplusplus */
   
-  typedef struct {
-    __UINT32_TYPE__ clSize;
-    __UINT32_TYPE__ rpcReserved;
-    VarType         vt;
-    __UINT16_TYPE__ wReserved1;
-    __UINT16_TYPE__ wReserved2;
-    __UINT16_TYPE__ wReserved3;
-    __GNU_EXTENSION union {
-      Boolean boolVal;
-      Byte bVal;
-      Integer iVal;
-      Long lVal;
-      uLongLong llVal;
-      Object oVal;
-      bString sRef;
-    };
-  } Variant;
+    typedef struct {
+      uint32_t  clSize;
+      uint32_t  rpcReserved;
+      VarType   vt;
+      uint16_t  wReserved1;
+      uint16_t  wReserved2;
+      uint16_t  wReserved3;
+      union {
+        Boolean   boolVal;
+        Byte      bVal;
+        Integer   iVal;
+        Long      lVal;
+        uLongLong llVal;
+        Object    oVal;
+        bString   sRef;
+      };
+    } Variant;
 
 #   if defined(__cplusplus)
+  };
 };
 #   endif /* __cplusplus */
 # endif /* _SPI_VARIANT_HPP_ */

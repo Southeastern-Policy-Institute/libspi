@@ -16,4 +16,9 @@
 #   else
 #     define  EXTERN_C extern
 #   endif /* __cplusplus */
+#   if !defined(ALIGN) && defined(__GNUC__)
+#     define ALIGN(x) __attribute__ ((aligned (x)))
+#   elif !defined(ALIGN) && defined(_MSC_VER)
+#     define ALIGN(x) __declspec(align(x))
+#   endif /* ALIGN */
 # endif /* _SPI_H_ */
