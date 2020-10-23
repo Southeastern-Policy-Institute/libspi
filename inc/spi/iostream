@@ -1,0 +1,41 @@
+/* IOSTREAM - String Stream
+ * Southeastern Policy Institute, 2020
+ */
+
+# if !defined(_SPI_IOSTREAM_HPP_) && defined(__cplusplus)
+#   define  _SPI_IOSTREAM_HPP_
+#   include "spi/char_traits.hpp"
+#   include "spi/ios_base.hpp"
+
+namespace spi {
+
+  class ios : ios_base {
+    list<string> stored_;
+  public:
+    
+    inline ios& operator<< (const string& str) {
+      stored_.add (str);
+      return *this;
+    };
+
+    inline ios& operator<< (tchar_t c) {
+      stored_.add (c);
+      return *this;
+    };
+
+    inline void clear (void) {
+      stored_.clear ();
+    };
+
+    operator string (void) const {
+      string temp;
+      for (const auto& str : stored_)
+        temp << str;
+      return temp;
+    };
+
+  };
+
+};
+
+# endif /* _SPI_IOSTREAM_HPP_ */

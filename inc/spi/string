@@ -1,0 +1,9 @@
+/* STRING.HPP - Variable-width character string manipulation.
+ * Southeastern Policy Institute, 2020
+ */
+
+# if !defined(_SPI_STRING_)
+#   define  _SPI_STRING_
+#   include "char_traits.hpp"
+#   include "string.hpp"
+# endif /* _SPI_STRING_ */

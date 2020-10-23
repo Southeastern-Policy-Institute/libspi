@@ -3,7 +3,6 @@
 #   include <windows.h>
 # endif /* WIN32 */
 # include <stdio.h>
-# define  COMPILING_BYLAW
 # include <spi.h>
 
 # ifdef WIN32

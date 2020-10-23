@@ -12,22 +12,21 @@
 #   endif /* ENUM */
 #   ifdef __cplusplus
 namespace spi {
-  namespace types {
 #   endif /* __cplusplus */
 
-    typedef uint16_t  VarType;    // Size: 2
-    typedef uint16_t  Boolean;    // Size: 2
-    typedef uint8_t   Byte;       // Size: 1
-    typedef int16_t   Integer;    // Size: 2
-    typedef uint16_t  uInteger;   // Size: 2
-    typedef int32_t   Long;       // Size: 4
-    typedef uint32_t  uLong;      // Size: 4
-    typedef uint64_t  uLongLong;  // Size: 8
-    typedef uintptr_t Object;     // Size: 4
-    typedef uint16_t**bString;    // Size: 4
+  typedef uint16_t  VarType;    // Size: 2
+  typedef uint16_t  Boolean;    // Size: 2
+  typedef uint8_t   Byte;       // Size: 1
+  typedef int16_t   Integer;    // Size: 2
+  typedef uint16_t  uInteger;   // Size: 2
+  typedef int32_t   Long;       // Size: 4
+  typedef uint32_t  uLong;      // Size: 4
+  typedef uint64_t  uLongLong;  // Size: 8
+  typedef uintptr_t Object;     // Size: 4
+  typedef uint16_t**bString;    // Size: 4
+  typedef __SIZE_TYPE__ size_t;
 
 #   ifdef __cplusplus
-  };
 };
 #   endif /* __cplusplus */
 # endif /* _SPI_TYPES_HPP_ */

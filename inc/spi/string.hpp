@@ -5,6 +5,8 @@
 # if !defined(_SPI_STRING_HPP_)
 #   define  _SPI_STRING_HPP_
 #   include "string.h"
+#   include "array.hpp"
+#   include "algorithm.hpp"
 #   ifdef __cplusplus
 namespace spi {
 
@@ -58,8 +60,27 @@ namespace spi {
     };
 #     endif /* UNICODE */
 
-    friend string& operator<< (string&, const string&);
-    friend string& operator<< (string&, tchar_t);
+    string& operator<< (const string& str) {
+      __SIZE_TYPE__ len = length () + str.length () + 1;
+      tchar_t* temp = new tchar_t[len];
+      memclr (temp, len);
+      memcpy (temp, array_, length ());
+      memcpy (temp + length (), str.c_str (), str.length ());
+      delete array_;
+      array_ = temp;
+      return *this;
+    };
+
+    string& operator<< (tchar_t c) {
+      __SIZE_TYPE__ len = length () + 2;
+      tchar_t* temp = new tchar_t[len];
+      memclr (temp, len);
+      memcpy (temp, array_, length ());
+      temp[length()] = c;
+      delete array_;
+      array_ = temp;
+      return *this;
+    };
 
     bool operator== (const string& target) const {
       if (target.length () != length ())

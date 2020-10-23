@@ -2,7 +2,6 @@
 # Southeastern Policy Institute, 2020
 
 #   Alter these according to desired target
-TARGET   := WIN32
 DEBUG    := DEBUG
 ifeq ($(TARGET),WIN32)
   DEFS   := WINVER=0x0501 UNICODE $(TARGET) $(DEBUG)
@@ -72,7 +71,7 @@ CPPFLAGS := -c -Wall -fPIC -ffreestanding -fno-builtin -nostdinc++ \
 CFLAGS := -c -Wall -fPIC -ffreestanding -fno-builtin \
           -fno-exceptions -fno-ident \
           $(INCDIR:%=-I%) $(DEFS:%=-D%) $(UNDEFS:%=-U%)
-LDFLAGS += -fno-ident \
+LDFLAGS += -fno-ident -static-libgcc -static-libstdc++ \
            $(LIBDIR:%=-L%) $(LIB_PROJ:%=-l%)
 
 # Rules
